@@ -1,0 +1,12 @@
+<h1>Films#index</h1>
+<table>
+  <% @films.each do |film| %>
+  <tr>
+    <td><%= film.title %></td>
+    <td><%= film.release_year %></td>
+    <td><%= film.tags %></td>
+    <td><%= film.location %></td>
+  </tr>
+  <% end %>
+</table>
+

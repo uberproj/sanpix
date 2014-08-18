@@ -1,0 +1,13 @@
+<h1>Locations#index</h1>
+<p>Find me in app/views/locations/index.html.erb</p>
+<table>
+  <% @locations.each do |location| %>
+  <tr>
+    <td><%= location.id %></td>
+    <td><%= location.address %></td>
+    <td><%= location.lat %></td>
+    <td><%= location.lng %></td>
+  </tr>
+  <% end %>
+</table>
+

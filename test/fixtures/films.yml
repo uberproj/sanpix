@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: Film One
+  release_year: 1985
+  tags: Jim|Jason|John|MGM
+  location: San Francisco
+
+two:
+  title: Film Two
+  release_year: 1995
+  tags: Jim|John|Tom|Disney
+  location: Seattle

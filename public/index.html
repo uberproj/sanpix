@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SanPix</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;subset=latin,latin-ext" />
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  </head>
+  <body>
+    <div id="controlbox">
+      <div id="searchbox">
+	    <div class="input-group">
+	      <span class="input-group-addon"><button class="btn btn-primary glyphicon glyphicon-map-marker" id="btn_find_me"></button></span>
+	      <input type="text" id="search_film" class="form-control" placeholder="Search films"></input>
+	    </div>
+      </div>
+      <div class="nav_controls" id="content_controls">
+	    <button id="btn_map" class="btn btn-large btn-warning">Show map</button>
+      </div>
+    </div>
+    
+    <div id="films_holder">
+      <img src="images/film.jpg" width="64px"></img>
+      <button id="btn_hide_films_info" class="btn btn-default pull-right"><i class="glyphicon glyphicon-remove"></i></button>
+      <div id="films_list_holder"><ul></ul></div>
+    </div>
+    
+    <script id="film-item-template" type="text/x-handlebars-template">
+      <li>
+        <table class="table table-hover">
+          <tr>
+            <td><a class="btn btn-link" href="http://www.imdb.com/find?q={{title}}&s=all">{{title}}</a></td>
+            <td style="width: 64px;">{{release_year}}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="film_item_tags">
+              {{#list tags}}<a href="http://www.imdb.com/find?q={{tag}}&s=all">{{tag}}</a><br/>{{/list}}
+            </td>
+          </tr>
+        </table>
+      </li>
+    </script>
+
+    <script src="js/external/jquery-1.11.1.min.js"></script>
+    <script src="js/external/underscore.js"></script>
+    <script src="js/external/backbone.js"></script>
+    <script src="js/external/Faker.js"></script>
+    <script src="js/external/handlebars-v1.3.0.js"></script>
+    <script src="js/external/jquery.autocomplete.min.js"></script>
+
+    <script src="js/model/film.js"></script>
+    <script src="js/collections/film.js"></script>
+    <script src="js/model/location.js"></script>
+    <script src="js/collections/location.js"></script>
+    
+    <script src="js/views/film_list_view.js"></script>
+    <script src="js/views/film_list_item_view.js"></script>
+    <script src="js/views/location_list_view.js"></script>
+    <script src="js/views/location_marker_view.js"></script>
+
+    <script src="js/sanpix.js"></script>
+    <script src="js/suggest.js"></script>
+
+    <div id="map_canvas"></div>
+  </body>
+</html>
+
