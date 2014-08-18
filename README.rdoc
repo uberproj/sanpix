@@ -11,7 +11,53 @@ This README describes the SanPix project. It includes the following sections:
 * Trade-offs and Future Improvements
 
 == General Description
-== System Structure
-== Implementation
-== Trade-offs and Future Improvements
+SanPix provides an interface where user can browse films taken around San Francisco area, organized by their locations. These locations are marked on the map whenever it's included in the current map view. Clicking the marker will show the list of films in that specific place. Each film includes its name, release year and related information (director, actors, companies) as tags. User can find more information by following the tag to IMDB.com.
 
+In addition to directly manipulate the map, user can also search the film name in the text box. The system will provide a list of related films while the user is typing. Selecting one film will lead the map to its location.
+
+Side note: This is the first time I'm working on a web application. So far I've only worked on the backend (such as storage, file system, etc). For me the "backend" mentioned here still looks like a frontend. I compared several web development frameworks, and it seems Ruby-on-Rails provides a fast development environment, and there are many resources available.
+
+== System Structure
+The system includes a backend system which is built with Ruby-on-Rails. It fetches the movie information from https://data.sfgov.org and stored in a location database for better performance. It provides several access points to retrieve different data, which will be returned in JSON format.
+
+The frontend system (located under public directory) interacts with users, and sends requests to the backend. It then translates JSON into the real models and display it to the user.
+
+== Implementation Details
+=== Backend
+The backend system is designed with MVC pattern. Two models, Film and Location, are used to represent films and their locations. The two models are associated with each other so the query is easier. Their corresponding controllers provide the following access points:
+
+Film Controller
+index: List the films in the database, including their locations. Two types of filters can be specified: 1) location, which allows to search only films in that specific location. 2) key, which allows to search films whose titles contain that specific key.
+show: Return the detail information for a specific film.
+
+Location Controller
+index: List the locations in the database. An extra parameter bounds can be provided so that only locations within that rectangle area will be returned.
+show: Return the detail information for a specific location.
+
+Other than these, another controller is provided to retrieve data from https://data.sfgov.org. It uses http requests to get all the movie items and saves them as our models. This is used only for system initialization, and we will ignore it in this description.
+
+Each controller has its corresponding views, where in SanPix, they are used to translate models into JSON.
+
+The backend also includes two helper classes: 1) data loader, which is used to load data from https://data.sfgov.org and translates them so the controller can easily use them for the initialization. 2) geo coder, which is used to translate a given addrss into GPS coord. It uses google map api for the translation, as after comparing with some other service providers, it offers the best result. The geo coder is embedded in the Location model. Whenever a location object is validated before saving, its address will be encoded.
+
+=== Frontend
+The frontend uses Backbone.js to organize its functions. Same as the backend, it has two types of collections, FilmList and FilmLocationList. These collections have their url pointing to the corresponding backend access points so Backbone.js will retrieve their objects.
+
+For FilmLocationList, each time we have a location object added into the list, its controller will also created a FilmLocationMarkerView, which creates a marker on the map. The marker shows the basic information about this location, and when it's clicked, the marker initializes the FilmList for all films taken in that location and initiates a child view to display those films. Because the film information is created dyanmically in the script, Handlebars.js is used so we can separate the view from the script file and put in html (see index.html).
+
+When the map is changed (moved or resized), events are triggered and the controller updates FilmLocationList to includes only locations in current view. Markers will be reset correspondingly.
+
+jquery.autocomplete.js listens on the search textbox. When the user is typing, it sends requests to the backend asking for all films related to the keyword. After getting those films in JSON, it displays it as a list for user. If one item is selected, jquery.autocomplete.js will invokes the customize function (defined in suggest.js) which retrieves the location from the selected item and navigates the map there.
+
+Finally, a button is provided near the search textbox to help user locate his/her own location. This requires users' permission though.
+
+== Trade-offs and Future Improvements
+The system is definitely not perfect, as I spent most of my time learning web application development. Here are the major trade-offs I made:
+1. To simplify the implementation, I defined the model association that one location has many films, which each film can only have one location. The actual association should be many-to-many. However, this is good enough for our purpose. Same films in different locations are considered different in our system.
+2. Searching only works on the film title. Users cannot input address or actors/directors to search related information. Besides, I use SQL query LIKE instead of full-text indexing to provide this function.
+
+If enough time is provided, I would like to implement the following features:
+1. Separate Person and Company tables. Director, actors, and publishing companies should be stored in different tables, other than a column inside Film.
+2. Better auto-completion support. Users should be allowed to type addresses, actors, companies. The list will include different icons to indicate its type. Besides, the list should always include one last item as a simple "go-to" button on the map.
+3. More searching functions. On the film info window shown after user clicks the marker, we list tags for that film. If user follows one tag, the map should be updated to include all films with the same tag.
+4. Better IMDB integration. Instead of showing the search page as today, it should find the exact item and display it in a frame using Ajax query.
